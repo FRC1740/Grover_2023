@@ -18,4 +18,6 @@ public final class Constants {
     public static final int kCoDriverControllerPort = 1;
     public static final double DEADZONE = .05;
   }
+  public static final int kManipulatorExtendPort = 0;
+  public static final int kManipulatorRetractPort = 1;
 }
