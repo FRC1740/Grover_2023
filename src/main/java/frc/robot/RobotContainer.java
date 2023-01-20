@@ -3,15 +3,20 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import static edu.wpi.first.wpilibj.XboxController.Button;
 
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.OI;
-//import frc.robot.commands.Autos;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Manipulator;
 // import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,10 +27,12 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  public final Manipulator m_manipulator = new Manipulator();
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OI.kDriverControllerPort);
+  // The driver's controller
+  private final XboxController m_driverController = new XboxController(Constants.OI.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -43,6 +50,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+
+    new JoystickButton(m_driverController, Button.kA.value)
+        .onTrue(new InstantCommand(() -> m_manipulator.Extend()))
+        .onFalse(new InstantCommand(() -> m_manipulator.Retract()));
 
     // Configure default commands
     // Set the default drive command to split-stick arcade drive
