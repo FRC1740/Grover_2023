@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.*;
+import frc.robot.OI;
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -50,7 +51,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   
    public void arcadeDrive(double fwd, double rot, boolean squaredInput) {
-    m_drive.arcadeDrive(fwd, rot, squaredInput);
+    m_drive.arcadeDrive(OI.deadZone(fwd), OI.deadZone(rot), squaredInput);
   }
   
   /**
