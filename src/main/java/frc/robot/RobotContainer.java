@@ -5,9 +5,7 @@
 package frc.robot;
 import static edu.wpi.first.wpilibj.XboxController.Button;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants.OI;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Manipulator;
 // import frc.robot.subsystems.ExampleSubsystem;
