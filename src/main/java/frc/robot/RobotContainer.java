@@ -7,7 +7,7 @@ import static edu.wpi.first.wpilibj.XboxController.Button;
 
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.Claw;
 // import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  public final Manipulator m_manipulator = new Manipulator();
+  public final Claw m_Claw = new Claw();
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -50,15 +50,15 @@ public class RobotContainer {
   private void configureBindings() {
 
     new JoystickButton(m_driverController, Button.kA.value)
-        .onTrue(new InstantCommand(() -> m_manipulator.Extend()))
-        .onFalse(new InstantCommand(() -> m_manipulator.Retract()));
+        .onTrue(new InstantCommand(() -> m_Claw.Deploy()))
+        .onFalse(new InstantCommand(() -> m_Claw.Retract()));
 
     // Configure default commands
     // Set the default drive command to split-stick arcade drive
     m_robotDrive.setDefaultCommand(
         // "Mario-Cart" drive: Triggers are gas and brake. Right stick turns left/right
         // Triggers are Axis 2; RightStick X is axis 3
-        // Note the constants defined in the wpi XboxController class DO NOT MATCH the DS axes
+        // Note the constants defined in the wpi XboxController class DO NOT MATCH the DS axegs
         new RunCommand(() ->
             m_robotDrive.arcadeDrive(m_driverController.getRightTriggerAxis() - m_driverController.getLeftTriggerAxis(),
                   -m_driverController.getLeftX(), true), m_robotDrive));
