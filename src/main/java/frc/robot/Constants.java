@@ -20,4 +20,15 @@ public final class Constants {
   }
   public static final int kManipulatorExtendPort = 0;
   public static final int kManipulatorRetractPort = 1;
+
+  public class ShuffleboardConstants {
+
+    public static final String RobotTab = "Robot";
+    public static final String ClimberTab = "Climber";
+    public static final String DriveTrainTab = "DriveTrain";
+    public static final String LauncherTab = "Launcher";
+    public static final String IntakeTab = "Intake";
+    public static final String VisionTab = "Vision";
+  }  
+
 }

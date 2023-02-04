@@ -7,14 +7,15 @@ import static edu.wpi.first.wpilibj.XboxController.Button;
 
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Manipulator;
-// import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.Arm;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.constants.ArmConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -25,8 +26,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  public final Manipulator m_manipulator = new Manipulator();
-
+  public final Claw m_Claw = new Claw();
+  public final Arm m_Arm = new Arm();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   // The driver's controller
@@ -50,15 +51,20 @@ public class RobotContainer {
   private void configureBindings() {
 
     new JoystickButton(m_driverController, Button.kA.value)
-        .onTrue(new InstantCommand(() -> m_manipulator.Extend()))
-        .onFalse(new InstantCommand(() -> m_manipulator.Retract()));
+        .onTrue(new InstantCommand(() -> m_Arm.setSetpoint(ArmConstants.kStowedAngle)));
+    new JoystickButton(m_driverController, Button.kB.value)
+        .onTrue(new InstantCommand(() -> m_Arm.setSetpoint(ArmConstants.kHighNodeAngle)));
+    new JoystickButton(m_driverController, Button.kX.value)
+        .onTrue(new InstantCommand(() -> m_Arm.setSetpoint(ArmConstants.kMidNodeAngle)));
+    new JoystickButton(m_driverController, Button.kY.value)
+        .onTrue(new InstantCommand(() -> m_Arm.setSetpoint(ArmConstants.kLowNodeAngle)));
 
     // Configure default commands
     // Set the default drive command to split-stick arcade drive
     m_robotDrive.setDefaultCommand(
         // "Mario-Cart" drive: Triggers are gas and brake. Right stick turns left/right
         // Triggers are Axis 2; RightStick X is axis 3
-        // Note the constants defined in the wpi XboxController class DO NOT MATCH the DS axes
+        // Note the constants defined in the wpi XboxController class DO NOT MATCH the DS axegs
         new RunCommand(() ->
             m_robotDrive.arcadeDrive(m_driverController.getRightTriggerAxis() - m_driverController.getLeftTriggerAxis(),
                   -m_driverController.getLeftX(), true), m_robotDrive));

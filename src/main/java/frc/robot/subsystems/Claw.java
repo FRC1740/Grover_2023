@@ -14,24 +14,24 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 // further reading is available at https://www.geeksforgeeks.org/static-import-java/
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
-public class Manipulator extends SubsystemBase {
-  DoubleSolenoid Intake;  
+public class Claw extends SubsystemBase {
+  DoubleSolenoid m_solenoid;  
 
   /** Creates a new Manipulator. */
-  public Manipulator() {
-    Intake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.kManipulatorExtendPort, Constants.kManipulatorRetractPort);
+  public Claw() {
+    m_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.kManipulatorExtendPort, Constants.kManipulatorRetractPort);
     // Set the colors appropriate for each game piece
   }
 
   // These next two methods are temporary just to test peumatics.
   // The actual robot may have TWO separate mechanisms for cone/cube
   // selected by the drive team via OI input TBD
-  public void Extend() {
-    Intake.set(kForward);
+  public void Deploy() {
+    m_solenoid.set(kForward);
   }
 
   public void Retract() {
-    Intake.set(kReverse);
+    m_solenoid.set(kReverse);
   }
 
   @Override
