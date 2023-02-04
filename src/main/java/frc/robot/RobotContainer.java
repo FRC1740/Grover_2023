@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.GroundIntake;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -26,8 +28,9 @@ import frc.constants.ArmConstants;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  public final Claw m_Claw = new Claw();
-  public final Arm m_Arm = new Arm();
+  public final Claw m_claw = new Claw();
+  public final Arm m_arm = new Arm();
+  public final GroundIntake m_groundIntake = new GroundIntake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   // The driver's controller
@@ -50,15 +53,43 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    m_Arm.enable();
+    // Enable the Arm PID Subsystem
+    // Maybe need to enable/disable this when running commands
+    // that will utilize the ground intake? Or just ensure
+    // That the Arm setPoint remains at starting config setpoint?
+
+    m_arm.enable();
+
+    // Basic PID button commands for Arm Rotation
+    // new JoystickButton(m_driverController, Button.kA.value)
+    //     .onTrue(new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kStowedAngle)));
+    // new JoystickButton(m_driverController, Button.kB.value)
+    //     .onTrue(new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kHighNodeAngle)));
+    // new JoystickButton(m_driverController, Button.kX.value)
+    //     .onTrue(new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kMidNodeAngle)));
+    // new JoystickButton(m_driverController, Button.kY.value)
+    //     .onTrue(new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kLowNodeAngle)));
+
+    // Combination PID commands for Arm rotate & extend/retract
     new JoystickButton(m_driverController, Button.kA.value)
-        .onTrue(new InstantCommand(() -> m_Arm.setSetpoint(ArmConstants.kStowedAngle)));
+      .onTrue(new InstantCommand(() -> new SequentialCommandGroup(
+          new InstantCommand(() -> m_arm.telescope(ArmConstants.kStowedPosition)),
+          new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kStowedAngle)))));
+
     new JoystickButton(m_driverController, Button.kB.value)
-        .onTrue(new InstantCommand(() -> m_Arm.setSetpoint(ArmConstants.kHighNodeAngle)));
+      .onTrue(new InstantCommand(() -> new SequentialCommandGroup(
+          new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kHighNodeAngle)),
+          new InstantCommand(() -> m_arm.telescope(ArmConstants.kHighNodePosition)))));
+
     new JoystickButton(m_driverController, Button.kX.value)
-        .onTrue(new InstantCommand(() -> m_Arm.setSetpoint(ArmConstants.kMidNodeAngle)));
+      .onTrue(new InstantCommand(() -> new SequentialCommandGroup(
+          new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kMidNodeAngle)),
+          new InstantCommand(() -> m_arm.telescope(ArmConstants.kMidNodePosition)))));
+    
     new JoystickButton(m_driverController, Button.kY.value)
-        .onTrue(new InstantCommand(() -> m_Arm.setSetpoint(ArmConstants.kLowNodeAngle)));
+      .onTrue(new InstantCommand(() -> new SequentialCommandGroup(
+          new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kLowNodeAngle)),
+          new InstantCommand(() -> m_arm.telescope(ArmConstants.kLowNodePosition)))));
 
     // Configure default commands
     // Set the default drive command to split-stick arcade drive

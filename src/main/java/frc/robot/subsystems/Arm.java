@@ -102,7 +102,7 @@ public class Arm extends PIDSubsystem {
   public void useOutput(double output, double setpoint) {
     // Use the output here
     // setpoint may be useful for a feedforward adjustment
-    m_rotationLeader.setVoltage(output);
+    m_rotationLeader.set(output);
   }
 
   @Override
@@ -121,7 +121,12 @@ public class Arm extends PIDSubsystem {
     return getMeasurement();
   }
 
-  private double getArmExtensionInches() {
+  public double getArmExtensionInches() {
     return m_extensionEncoder.getPosition();
+  }
+
+  public void telescope(double speed) {
+      m_extensionMotor.set(speed);
+      return;
   }
 }
