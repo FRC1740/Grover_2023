@@ -45,7 +45,6 @@ public class Arm extends PIDSubsystem {
         new PIDController(.01, 0, 0));
 
         // The target angle for PID rotation control
-    // m_setpoint = ArmConstants.kStowedAngle;
     // Follower motor direction is inverted
     m_rotationFollower.follow(m_rotationLeader, true);
     m_rotationEncoder = m_rotationLeader.getEncoder();
@@ -61,6 +60,9 @@ public class Arm extends PIDSubsystem {
     m_extensionEncoder.setPositionConversionFactor(ArmConstants.ARM_EXTENSION_POSITION_CONVERSION_FACTOR);
     m_rotationLeader.burnFlash();
     m_rotationFollower.burnFlash();
+
+    // Initial setpoint for starting configuration (stowed, 0.0)
+    setSetpoint(ArmConstants.kStowedAngle);
 
     // Create and get reference to SB tab
     m_sbt_Arm = Shuffleboard.getTab(ShuffleboardConstants.ArmTab);
@@ -93,11 +95,14 @@ public class Arm extends PIDSubsystem {
   public void periodic() {
     // WPILib Docs say to call the parent periodic method or PID will not work
     super.periodic();
+    m_nte_ArmAngle.setDouble(getArmRotationDegrees());
+    m_nte_ArmExtension.setDouble(getArmExtensionInches());
   }
   @Override
   public void useOutput(double output, double setpoint) {
     // Use the output here
-    m_rotationLeader.set(output);
+    // setpoint may be useful for a feedforward adjustment
+    m_rotationLeader.setVoltage(output);
   }
 
   @Override

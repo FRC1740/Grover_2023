@@ -50,6 +50,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
+    m_Arm.enable();
     new JoystickButton(m_driverController, Button.kA.value)
         .onTrue(new InstantCommand(() -> m_Arm.setSetpoint(ArmConstants.kStowedAngle)));
     new JoystickButton(m_driverController, Button.kB.value)

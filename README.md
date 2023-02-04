@@ -1,14 +1,18 @@
-# CommandBased_2023
+# Grover_2023
 FRC Robot 2023 Java Code: Command-Based framework
-** Updated to 2023.1.1 Release version
+** Updated to 2023.2.1 Release version
+
+This repository runs parallel to our CommandBased_2023 robot code with the following changes:
+* Drivetrain uses Talon motor controllers to run CIM motors
+* IMU is AnalogDevices ADIS16448 instead of NavX
 
 ### Subsystems
 
 #### DriveSubsystem
-* SparkMax controlled 4-Motor (2 Leaders/2 Followers) Drive SystemDepends upon RevRobotics RevLib vendor library
-* Kauai Labs NavX IMU - [2023 Vendor Library](https://dev.studica.com/releases/2023/NavX.json) 
+* Talon controlled 4-Motor (2 Leaders/2 Followers) Drive System Depends upon CTRE vendor library
+* 
 
-#### Arm
+#### Arm (PID Subsystem)
 * 2x SparkMax controlled brushless Neo motors, leader/follower for rotation
 * 1x SparkMax controlled Neo motor for extension
 
