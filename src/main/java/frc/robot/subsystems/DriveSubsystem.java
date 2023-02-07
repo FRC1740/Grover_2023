@@ -16,9 +16,16 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants.*;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class DriveSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
+
+  // ADIS16448 plugged into the MXP port
+  ADIS16448_IMU m_gyro = new ADIS16448_IMU();  
+
+  /** Creates a new DriveSubsystem. */
   private final WPI_TalonSRX m_leftMotorLeader;
   private final WPI_TalonSRX m_leftMotorFollower;
   private final WPI_TalonSRX m_rightMotorLeader;
@@ -27,6 +34,13 @@ public class DriveSubsystem extends SubsystemBase {
   // The robot's drive
   private final DifferentialDrive m_drive;
 
+  GenericEntry m_nte_DriveSpeedFilter;
+  GenericEntry m_nte_DriveRotationFilter;
+
+  // Drive input filters
+  LinearFilter speedFilter;
+  LinearFilter rotationFilter;
+  
   public DriveSubsystem() {
 
     /* Master Talons for arcade drive */
@@ -51,63 +65,23 @@ public class DriveSubsystem extends SubsystemBase {
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     NetworkTable m_nt = inst.getTable("drivetrain");
     
-    // get a topic from a NetworkTableInstance
-    // the topic name in this case is the full name
-    //DoubleTopic dblTopic = inst.getDoubleTopic("/drivetrain/gyro");
-    
-    // get a topic from a NetworkTable
-    // the topic name in this case is the name within the table;
-    // this line and the one above reference the same topic
-    // DoubleTopic dtGyro = m_nt.getDoubleTopic("gyro");
-    
-    // get a type-specific topic from a generic Topic
-    // Topic genericTopic = inst.getTopic("/datatable/X");
-    // DoubleTopic dblTopic = new DoubleTopic(genericTopic);
 
     // Create and get reference to SB tab
     ShuffleboardTab m_sbt_DriveTrain = edu.wpi.first.wpilibj.shuffleboard.Shuffleboard.getTab("DriveTrain");
   
-    GenericEntry m_nte_Testing;
+    // GenericEntry m_nte_Testing;
   
-    // Autonomous Variables
-    GenericEntry m_nte_a_DriveDelay;
-    GenericEntry m_nte_b_DriveDistance;
-    GenericEntry m_nte_c_DriveTurnAngle;
-    GenericEntry m_nte_autoDriveMode;
-
-
     // Create widgets for digital filter lengths
-    GenericEntry m_nte_DriveSpeedFilter = m_sbt_DriveTrain.addPersistent("Drive Speed Filter", 10.0)
+    m_nte_DriveSpeedFilter = m_sbt_DriveTrain.addPersistent("Drive Speed Filter", 11)
           .withSize(2, 1).withPosition(0, 0).getEntry();
 
-    GenericEntry m_nte_DriveRotationFilter = m_sbt_DriveTrain.addPersistent("Drive Rotation Filter", 5.0)
+    m_nte_DriveRotationFilter = m_sbt_DriveTrain.addPersistent("Drive Rotation Filter", 5)
           .withSize(2, 1).withPosition(0, 1).getEntry();
 
-    // Create widget for non-linear input
-    GenericEntry m_nte_InputExponent = m_sbt_DriveTrain.addPersistent("Input Exponent", 1.0)        .withSize(1, 1).withPosition(0, 2).getEntry();
-
-    // Create widgets for AutoDrive
-    m_nte_a_DriveDelay     = m_sbt_DriveTrain.addPersistent("a Launch Delay", .5)
-          .withSize(1, 1).withPosition(3, 0).getEntry();
-    m_nte_b_DriveDistance  = m_sbt_DriveTrain.addPersistent("b Drive Distance", 48)
-          .withSize(1, 1).withPosition(3, 1).getEntry();
-    m_nte_c_DriveTurnAngle = m_sbt_DriveTrain.addPersistent("c Turn Angle", 0.0)
-          .withSize(1, 1).withPosition(3, 2).getEntry();
-    m_nte_autoDriveMode    = m_sbt_DriveTrain.addPersistent("AutoDrive Mode", 2)
-          .withSize(1, 1).withPosition(3, 3).getEntry();
-
+    speedFilter = LinearFilter.movingAverage((int)m_nte_DriveSpeedFilter.getInteger(11));
+    rotationFilter = LinearFilter.movingAverage((int)m_nte_DriveSpeedFilter.getInteger(5));
+      
     //  m_nte_Testing     = m_sbt_DriveTrain.addPersistent("Testing", 0.0)       .withSize(1, 1).withPosition(3, 3).getEntry();
-
-    // Encoder outputs
-    // Display current encoder values
-    GenericEntry m_nte_LeftEncoder = m_sbt_DriveTrain.addPersistent("Left Side Encoder", 0.0)
-                .withSize(2,1).withPosition(4,0).getEntry();
-
-    GenericEntry m_nte_RightEncoder = m_sbt_DriveTrain.addPersistent("Right Side Encoder", 0.0)
-              .withSize(2,1).withPosition(4,1).getEntry();
-
-    GenericEntry m_nte_IMU_ZAngle = m_sbt_DriveTrain.addPersistent("IMU Z-Axis Angle", 0.0)
-              .withSize(2,1).withPosition(4,2).getEntry();
 
   }
 
@@ -119,7 +93,12 @@ public class DriveSubsystem extends SubsystemBase {
    */
   
    public void arcadeDrive(double fwd, double rot, boolean squaredInput) {
+    double f_fwd = speedFilter.calculate(fwd);
+    double f_rot = rotationFilter.calculate(rot);
+    // Swap the next two lines for filtered/raw input
     m_drive.arcadeDrive(OI.deadZone(fwd), OI.deadZone(rot), squaredInput);
+    //m_drive.arcadeDrive(OI.deadZone(f_fwd), OI.deadZone(f_rot), squaredInput);
+    
   }
   
   /**
@@ -136,6 +115,31 @@ public class DriveSubsystem extends SubsystemBase {
         });
   }
 
+  public double getAngle() {
+    //System.out.println("gyro angle" + m_gyro.getAngle());
+    return m_gyro.getAngle();
+  }
+
+  public Rotation2d getRotation2d(){
+    return Rotation2d.fromDegrees(m_gyro.getAngle());
+  }  
+
+  public void resetGyro() {
+    m_gyro.reset();
+  }
+
+  public double getRoll(){
+    return m_gyro.getGyroAngleY();
+  }
+  /**
+   * Returns the heading of the robot.
+   *
+   * @return the robot's heading in degrees, from 180 to 180
+   */
+  public double getHeading() {
+    return m_gyro.getAngle();
+  }
+
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
    *
@@ -148,7 +152,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
   }
 
   @Override

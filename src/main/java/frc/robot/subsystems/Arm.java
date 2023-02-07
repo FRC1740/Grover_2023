@@ -111,11 +111,11 @@ public class Arm extends PIDSubsystem {
     return m_rotationEncoder.getPosition();
   }
 
-  // @Override
-  // public void setSetpoint(double angle) {
-  //   m_setpoint = angle;
-  // }
-  // Convert Encoder ticks to degrees 
+  @Override
+  public void setSetpoint(double angle) {
+      System.out.println("Setting Setpoint to "+angle);
+      super.setSetpoint(angle);
+  }
 
   private double getArmRotationDegrees() {
     return getMeasurement();
@@ -126,7 +126,7 @@ public class Arm extends PIDSubsystem {
   }
 
   public void telescope(double speed) {
-      m_extensionMotor.set(speed);
+      //m_extensionMotor.set(speed);
       return;
   }
 }
