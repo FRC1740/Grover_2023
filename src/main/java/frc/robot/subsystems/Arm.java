@@ -17,10 +17,8 @@ import edu.wpi.first.networktables.*;
 public class Arm extends PIDSubsystem {
   private final CANSparkMax m_rotationLeader = new CANSparkMax(ArmConstants.kRotationLeaderMotorPort, CANSparkMax.MotorType.kBrushless);
   private final CANSparkMax m_rotationFollower = new CANSparkMax(ArmConstants.kRotationFollowerMotorPort, CANSparkMax.MotorType.kBrushless);
-  private final CANSparkMax m_extensionMotor = new CANSparkMax(ArmConstants.kExtensionMotorPort, CANSparkMax.MotorType.kBrushless);
   private final RelativeEncoder m_rotationEncoder;
   private final RelativeEncoder m_rotationFollowerEncoder;
-  private final RelativeEncoder m_extensionEncoder;
   //protected double m_setpoint;
 
   // Create and get reference to SB tab
@@ -28,15 +26,11 @@ public class Arm extends PIDSubsystem {
 
   // Encoders/PID Feedback sensors
   GenericEntry m_nte_ArmAngle;
-  GenericEntry m_nte_ArmExtension;
 
   // Parameters Passed from DS via Shuffleboard
   GenericEntry m_nte_HighNodeAngle;
   GenericEntry m_nte_MidNodeAngle;
   GenericEntry m_nte_LowNodeAngle;
-  GenericEntry m_nte_HighNodeExtension;
-  GenericEntry m_nte_MidNodeExtension;
-  GenericEntry m_nte_LowNodeExtension;
 
   /** Creates a new Arm. */
   public Arm() {
@@ -49,15 +43,12 @@ public class Arm extends PIDSubsystem {
     m_rotationFollower.follow(m_rotationLeader, true);
     m_rotationEncoder = m_rotationLeader.getEncoder();
     m_rotationFollowerEncoder = m_rotationFollower.getEncoder();
-    m_extensionEncoder = m_extensionMotor.getEncoder();
-
     // Reset encoders to Zero position for starting configuration
     m_rotationEncoder.setPosition(0.0);
-    m_extensionEncoder.setPosition(0.0);
+    m_rotationFollowerEncoder.setPosition(0.0);
 
     m_rotationEncoder.setPositionConversionFactor(ArmConstants.ARM_ROTATION_POSITION_CONVERSION_FACTOR);
     m_rotationFollowerEncoder.setPositionConversionFactor(ArmConstants.ARM_ROTATION_POSITION_CONVERSION_FACTOR);
-    m_extensionEncoder.setPositionConversionFactor(ArmConstants.ARM_EXTENSION_POSITION_CONVERSION_FACTOR);
     m_rotationLeader.burnFlash();
     m_rotationFollower.burnFlash();
 
@@ -70,16 +61,6 @@ public class Arm extends PIDSubsystem {
     // Create Widges for CURRENT Arm Position & Angle
     m_nte_ArmAngle = m_sbt_Arm.addPersistent("Current Arm Angle", getArmRotationDegrees())
           .withSize(2, 1).withPosition(0, 0).getEntry();
-    m_nte_ArmExtension = m_sbt_Arm.addPersistent("Current Arm Extension", getArmExtensionInches())
-          .withSize(2, 1).withPosition(0, 1).getEntry();
-
-    // Create widgets for TARGET Arm Position
-    m_nte_HighNodeExtension = m_sbt_Arm.addPersistent("High Node Extension", ArmConstants.kHighNodePosition)
-          .withSize(2, 1).withPosition(2, 0).getEntry();
-    m_nte_MidNodeExtension  = m_sbt_Arm.addPersistent("Mid Node Extension", ArmConstants.kMidNodePosition)
-          .withSize(2, 1).withPosition(2, 1).getEntry();
-    m_nte_LowNodeExtension = m_sbt_Arm.addPersistent("Low Node Extension", ArmConstants.kLowNodePosition)
-          .withSize(2, 1).withPosition(2, 2).getEntry();
 
     // Create widgets for TARGET Arm Angle
     m_nte_HighNodeAngle     = m_sbt_Arm.addPersistent("High Node Angle", ArmConstants.kHighNodeAngle)
@@ -96,7 +77,6 @@ public class Arm extends PIDSubsystem {
     // WPILib Docs say to call the parent periodic method or PID will not work
     super.periodic();
     m_nte_ArmAngle.setDouble(getArmRotationDegrees());
-    m_nte_ArmExtension.setDouble(getArmExtensionInches());
   }
   @Override
   public void useOutput(double output, double setpoint) {
@@ -121,12 +101,4 @@ public class Arm extends PIDSubsystem {
     return getMeasurement();
   }
 
-  public double getArmExtensionInches() {
-    return m_extensionEncoder.getPosition();
-  }
-
-  public void telescope(double speed) {
-      //m_extensionMotor.set(speed);
-      return;
-  }
 }
