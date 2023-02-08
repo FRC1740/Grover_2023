@@ -44,12 +44,12 @@ public class Arm extends PIDSubsystem {
     m_rotationEncoder = m_rotationLeader.getEncoder();
     m_rotationFollowerEncoder = m_rotationFollower.getEncoder();
     // Reset encoders to Zero position for starting configuration
-    m_rotationEncoder.setPosition(0.0);
-    m_rotationFollowerEncoder.setPosition(0.0);
+    m_rotationEncoder.setPosition(ArmConstants.kStowedAngle);
+    m_rotationFollowerEncoder.setPosition(ArmConstants.kStowedAngle);
 
     m_rotationEncoder.setPositionConversionFactor(ArmConstants.ARM_ROTATION_POSITION_CONVERSION_FACTOR);
     m_rotationFollowerEncoder.setPositionConversionFactor(ArmConstants.ARM_ROTATION_POSITION_CONVERSION_FACTOR);
-    m_rotationLeader.burnFlash();
+    m_rotationLeader.burnFlash(); // Do we need to do this?
     m_rotationFollower.burnFlash();
 
     // Initial setpoint for starting configuration (stowed, 0.0)
