@@ -93,7 +93,7 @@ public class Arm extends PIDSubsystem {
 
   @Override
   public void setSetpoint(double angle) {
-      System.out.println("Setting Setpoint to "+angle);
+      // System.out.println("Setting Setpoint to "+angle);
       super.setSetpoint(angle);
   }
 

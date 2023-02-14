@@ -76,6 +76,7 @@ public class RobotContainer {
     // new JoystickButton(m_driverController, Button.kY.value)
     //   .onTrue(new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kLowNodeAngle)));
 
+    // Button commands to test Arm Extension
     // Testing new Telescope PID subsystem/setpoint commands
     new JoystickButton(m_driverController, Button.kA.value)
       .onTrue(new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kStowedPosition)));
