@@ -4,7 +4,7 @@
     "NetworkTables Settings": {
       "serverTeam": "10.17.40.2"
     },
-    "mode": "Client (NT4)",
-    "serverTeam": "10.17.40.2"
+    "mode": "Client (NT3)",
+    "serverTeam": "1740"
   }
 }

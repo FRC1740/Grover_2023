@@ -34,7 +34,7 @@ public class Telescope extends PIDSubsystem {
   public Telescope() {
     super(
         // The PIDController used by the subsystem
-        new PIDController(.01, 0, 0));
+        new PIDController(ArmConstants.kExtP, ArmConstants.kExtI, ArmConstants.kExtD));
 
     m_extensionEncoder = m_extensionMotor.getEncoder();
     m_extensionEncoder.setPosition(0.0);
@@ -60,18 +60,21 @@ public class Telescope extends PIDSubsystem {
 
   @Override
   public void periodic() {
-    m_nte_ArmExtension.setDouble(getArmExtensionInches());
+    // Need to call super.periodic() or PID doesn't work
+    super.periodic();
+    m_nte_ArmExtension.setDouble(getMeasurement());
   }
 
   @Override
   public void useOutput(double output, double setpoint) {
     // Use the output here
+    m_extensionMotor.set(output);
   }
 
   @Override
   public double getMeasurement() {
     // Return the process variable measurement here
-    return 0;
+    return m_extensionEncoder.getPosition();
   }
   public double getArmExtensionInches() {
     return m_extensionEncoder.getPosition();

@@ -78,27 +78,20 @@ public class RobotContainer {
     // new JoystickButton(m_driverController, Button.kY.value)
     //   .onTrue(new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kLowNodeAngle)));
 
-    // Combination PID commands for Arm rotate & extend/retract
-
+    // Button commands to test Arm Extension
     new JoystickButton(m_driverController, Button.kA.value)
-      .onTrue(new SequentialCommandGroup(
-          new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kStowedPosition)),
-          new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kStowedAngle))));
+      .onTrue(new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kStowedPosition)));
 
     new JoystickButton(m_driverController, Button.kB.value)
-      .onTrue(new SequentialCommandGroup(
-          new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kHighNodeAngle)),
-          new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kHighNodePosition))));
+      .onTrue(new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kHighNodePosition)));
 
     new JoystickButton(m_driverController, Button.kX.value)
-      .onTrue(new SequentialCommandGroup(
-          new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kMidNodeAngle)),
-          new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kMidNodePosition))));
+      .onTrue(new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kMidNodePosition)));
 
     new JoystickButton(m_driverController, Button.kY.value)
-      .onTrue(new SequentialCommandGroup(
-          new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kLowNodeAngle)),
-          new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kLowNodePosition))));
+      .onTrue(new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kLowNodePosition)));
+
+    // Combination PID commands for Arm rotate & extend/retract
 
     // new JoystickButton(m_driverController, Button.kA.value)
     //   .onTrue(new SequentialCommandGroup(
