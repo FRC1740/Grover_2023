@@ -57,14 +57,12 @@ public class RobotContainer {
   private void configureBindings() {
 
     // Enable the Arm PID Subsystem
-    // Maybe need to enable/disable this when running commands
-    // that will utilize the ground intake? Or just ensure
-    // That the Arm setPoint remains at starting config setpoint?
-
+    // Disable this when running ground intake commands    
     m_arm.enable();
     m_telescope.enable();
 
     // Basic commands to rotate arm to specific set points
+    // THE FOLLOWING COMMANDS WORK: DO NOT CHANGE; KEEP FOR REFERENCE
 
     // new JoystickButton(m_driverController, Button.kA.value)
     //   .onTrue(new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kStowedAngle)));
@@ -79,6 +77,7 @@ public class RobotContainer {
     //   .onTrue(new InstantCommand(() -> m_arm.setSetpoint(ArmConstants.kLowNodeAngle)));
 
     // Button commands to test Arm Extension
+    // Testing new Telescope PID subsystem/setpoint commands
     new JoystickButton(m_driverController, Button.kA.value)
       .onTrue(new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kStowedPosition)));
 
@@ -92,7 +91,6 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kLowNodePosition)));
 
     // Combination PID commands for Arm rotate & extend/retract
-
     // new JoystickButton(m_driverController, Button.kA.value)
     //   .onTrue(new SequentialCommandGroup(
     //       new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kStowedPosition)),
@@ -114,11 +112,9 @@ public class RobotContainer {
     //       new InstantCommand(() -> m_telescope.setSetpoint(ArmConstants.kLowNodePosition))));
   
     // Configure default commands
-    // Set the default drive command to split-stick arcade drive
+    // "Mario-Cart" drive: Triggers are gas and brake. Right stick turns left/right
+    // Triggers are Axis 2; RightStick X is axis 3
     m_robotDrive.setDefaultCommand(
-        // "Mario-Cart" drive: Triggers are gas and brake. Right stick turns left/right
-        // Triggers are Axis 2; RightStick X is axis 3
-        // Note the constants defined in the wpi XboxController class DO NOT MATCH the DS axegs
         new RunCommand(() ->
             m_robotDrive.arcadeDrive(m_driverController.getRightTriggerAxis() - m_driverController.getLeftTriggerAxis(),
                   -m_driverController.getLeftX(), true), m_robotDrive));

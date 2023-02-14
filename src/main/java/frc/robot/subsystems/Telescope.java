@@ -37,12 +37,14 @@ public class Telescope extends PIDSubsystem {
         new PIDController(ArmConstants.kExtP, ArmConstants.kExtI, ArmConstants.kExtD));
 
     m_extensionEncoder = m_extensionMotor.getEncoder();
-    m_extensionEncoder.setPosition(0.0);
+    m_extensionEncoder.setPosition(ArmConstants.kStowedPosition);
     m_extensionEncoder.setPositionConversionFactor(ArmConstants.ARM_EXTENSION_POSITION_CONVERSION_FACTOR);
 
+    m_extensionMotor.burnFlash();
+    
     // Initial setpoint for starting configuration (stowed, 0.0)
     setSetpoint(ArmConstants.kStowedPosition);
-
+    
     // Create and get reference to SB tab
     m_sbt_Arm = Shuffleboard.getTab(ShuffleboardConstants.ArmTab);
     
@@ -68,6 +70,7 @@ public class Telescope extends PIDSubsystem {
   @Override
   public void useOutput(double output, double setpoint) {
     // Use the output here
+    // setpoint may be useful for a feedforward adjustment
     m_extensionMotor.set(output);
   }
 
